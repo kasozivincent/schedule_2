@@ -76,8 +76,19 @@ public static class Scheduler
                     {
                         if (currentDate.TimeOfDay < startingTime)
                             return  new ScheduleDetails(startingDate, $"Next schedule will execute on {startingDate}");
-                        if(currentDate.TimeOfDay >= startingTime && currentDate.TimeOfDay < endingTime)
-                            return  new ScheduleDetails(startingDate.AddHours(count), $"Next schedule will execute on {startingDate.AddHours(count)}");
+                        if (currentDate.TimeOfDay >= startingTime && currentDate.TimeOfDay < endingTime)
+                        {
+                            return configuration.DailyFrequency.IntervalType switch
+                            {
+                                IntervalType.Hours => new ScheduleDetails(startingDate.AddHours(count),
+                                    $"Next schedule will execute on {startingDate.AddHours(count)}"),
+                                IntervalType.Minutes => new ScheduleDetails(startingDate.AddMinutes(count),
+                                    $"Next schedule will execute on {startingDate.AddMinutes(count)}"),
+                                _ => new ScheduleDetails(startingDate.AddSeconds(count),
+                                    $"Next schedule will execute on {startingDate.AddSeconds(count)}")
+                            };
+                        }
+                            
                         return  new ScheduleDetails(startingDate.AddMonths(months), $"Next schedule will execute on {startingDate.AddMonths(months)}");
                     }
                     startingDate = startingDate.AddMonths(months);

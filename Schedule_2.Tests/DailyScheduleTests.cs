@@ -191,6 +191,36 @@ public class DailyScheduleTests
     }
     
     [Test]
+    public void CalculateDetails_RecurringDailyScheduleDisabled_OccurOnce_NoEndDate_Exact_Time()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2020, 1, 1),
+            },
+            CurrentDate = new DateTime(2020, 5, 5, 2, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = false,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Daily
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursOnceAt = new TimeSpan(2, 0, 0),
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(DateTime.MinValue));
+            Assert.That(details.Description, Is.EqualTo("Schedule was canceled"));
+        });
+    }
+    
+    [Test]
     public void CalculateDetails_RecurringDailyScheduleEnabled_OccurOnce_After_Time()
     {
         var configuration = new ScheduleConfiguration
@@ -199,6 +229,36 @@ public class DailyScheduleTests
             {
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2020, 10, 1)
+            },
+            CurrentDate = new DateTime(2020, 5, 5, 3, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Daily
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursOnceAt = new TimeSpan(2, 0, 0),
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2020, 5, 6, 2, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
+    
+    [Test]
+    public void CalculateDetails_RecurringDailyScheduleEnabled_OccurOnce_NoEndDate_After_Time()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2020, 1, 1),
             },
             CurrentDate = new DateTime(2020, 5, 5, 3, 0, 0),
             Configuration = new Configuration
@@ -251,6 +311,36 @@ public class DailyScheduleTests
             Assert.That(details.Description, Is.EqualTo("Schedule was canceled"));
         });
     }
+    
+    [Test]
+    public void CalculateDetails_RecurringDailyScheduleDisabled_OccurOnce_NoEndDate_After_Time()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2020, 1, 1),
+            },
+            CurrentDate = new DateTime(2020, 5, 5, 3, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = false,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Daily
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursOnceAt = new TimeSpan(2, 0, 0),
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(DateTime.MinValue));
+            Assert.That(details.Description, Is.EqualTo("Schedule was canceled"));
+        });
+    }
 
     [Test]
     public void CalculateDetails_RecurringDailyScheduleEnabled_OccurRepetitive_BeforeStartTime_Hours()
@@ -261,6 +351,40 @@ public class DailyScheduleTests
             {
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2020, 10, 1)
+            },
+            CurrentDate = new DateTime(2020, 5, 5, 1, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Daily
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 1,
+                IntervalType = IntervalType.Hours,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0),
+            },
+            WeeklyConfiguration = null
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2020, 5, 5, 2, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
+    
+    [Test]
+    public void CalculateDetails_RecurringDailyScheduleEnabled_OccurRepetitive_NoEndDate_BeforeStartTime_Hours()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2020, 1, 1),
             },
             CurrentDate = new DateTime(2020, 5, 5, 1, 0, 0),
             Configuration = new Configuration
