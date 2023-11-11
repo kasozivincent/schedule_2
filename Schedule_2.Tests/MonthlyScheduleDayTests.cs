@@ -3,7 +3,7 @@
 namespace Schedule_2.Tests;
 
 [TestFixture]
-public class MonthlyScheduleTests
+public class MonthlyScheduleDayTests
 {
     [Test]
     public void CalculateDetails_RecurringMonthlyScheduleEnabled_Day_OccurOnce_InvalidLimits()
@@ -773,7 +773,7 @@ public class MonthlyScheduleTests
     }
     
     [Test]
-    public void CalculateDetails_RecurringMonthlyScheduleEnabled_Day_OccurRepetitive_ExactCurrentDate_AfterTime()
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_Day_OccurRepetitive_ExactCurrentDate_AfterTime_Hours()
     {
         var configuration = new ScheduleConfiguration
         {
@@ -793,6 +793,84 @@ public class MonthlyScheduleTests
             {
                 OccursEvery = 1,
                 IntervalType = IntervalType.Hours,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0)
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                MonthDay = 8,
+                EveryAfterMonths = 2,
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2020, 7, 8, 2, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
+    
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_Day_OccurRepetitive_ExactCurrentDate_AfterTime_Minutes()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2020, 1, 8),
+                EndDate = new DateTime(2020, 10, 1)
+            },
+            CurrentDate = new DateTime(2020, 5, 8, 5, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 1,
+                IntervalType = IntervalType.Minutes,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0)
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                MonthDay = 8,
+                EveryAfterMonths = 2,
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2020, 7, 8, 2, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
+    
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_Day_OccurRepetitive_ExactCurrentDate_AfterTime_Seconds()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2020, 1, 8),
+                EndDate = new DateTime(2020, 10, 1)
+            },
+            CurrentDate = new DateTime(2020, 5, 8, 5, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 1,
+                IntervalType = IntervalType.Seconds,
                 StartingTime = new TimeSpan(2, 0, 0),
                 EndingTime = new TimeSpan(4, 0, 0)
             },
