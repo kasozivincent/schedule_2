@@ -230,7 +230,7 @@ public class MonthlyScheduleTheOccurOnceTests
                 StartDate = new DateTime(2023, 11, 1),
                 EndDate = new DateTime(2024, 10, 1)
             },
-            CurrentDate = new DateTime(2020, 11, 13, 1, 0, 0),
+            CurrentDate = new DateTime(2023, 11, 13, 1, 0, 0),
             Configuration = new Configuration
             {
                 Enabled = true,
@@ -717,7 +717,7 @@ public class MonthlyScheduleTheOccurOnceTests
             {
                 EveryAfterMonths = 1,
                 Position = Position.First,
-                Day = Day.Tuesday
+                Day = Day.Wednesday
             }
         };
 
@@ -739,7 +739,7 @@ public class MonthlyScheduleTheOccurOnceTests
                 StartDate = new DateTime(2023, 11, 1),
                 EndDate = new DateTime(2024, 11, 1)
             },
-            CurrentDate = new DateTime(2023, 11, 2, 3, 0, 0),
+            CurrentDate = new DateTime(2023, 11, 7, 3, 0, 0),
             Configuration = new Configuration
             {
                 Enabled = true,
@@ -752,16 +752,16 @@ public class MonthlyScheduleTheOccurOnceTests
             },
             MonthlyConfiguration = new MonthlyConfiguration
             {
-                EveryAfterMonths = 1,
+                EveryAfterMonths = 2,
                 Position = Position.First,
-                Day = Day.Tuesday
+                Day = Day.Wednesday
             }
         };
 
         var details = Scheduler.CalculateDetails(configuration);
         Assert.Multiple(() =>
         {
-            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2023, 6, 5, 2, 0, 0)));
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2024, 1, 3, 2, 0, 0)));
             Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
         });
     }
@@ -810,10 +810,10 @@ public class MonthlyScheduleTheOccurOnceTests
         {
             Limits = new Limits
             {
-                StartDate = new DateTime(2023, 7, 1),
+                StartDate = new DateTime(2023, 11, 1),
                 EndDate = new DateTime(2024, 11, 1)
             },
-            CurrentDate = new DateTime(2023, 7, 2, 3, 0, 0),
+            CurrentDate = new DateTime(2023, 11, 1, 3, 0, 0),
             Configuration = new Configuration
             {
                 Enabled = true,
@@ -835,7 +835,44 @@ public class MonthlyScheduleTheOccurOnceTests
         var details = Scheduler.CalculateDetails(configuration);
         Assert.Multiple(() =>
         {
-            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2023, 7, 10, 2, 0, 0)));
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2023, 11, 2, 2, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
+    
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_The_OccurOnce_FirstWeekEndDay()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2023, 11, 1),
+                EndDate = new DateTime(2024, 11, 1)
+            },
+            CurrentDate = new DateTime(2023, 11, 5, 3, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursOnceAt = new TimeSpan(2, 0, 0),
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                EveryAfterMonths = 3,
+                Position = Position.First,
+                Day = Day.WeekendDay
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2024, 2, 3, 2, 0, 0)));
             Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
         });
     }

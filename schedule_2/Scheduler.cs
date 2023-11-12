@@ -99,26 +99,22 @@ public static class Scheduler
             var day = configuration.MonthlyConfiguration.Day;
             var position = configuration.MonthlyConfiguration.Position;
             var startingDate = GetExactStartDate();
-            var occuringTime = (TimeSpan)configuration.DailyFrequency!.OccursOnceAt!;
-            startingDate = new DateTime(startingDate.Year, startingDate.Month, startingDate.Day,
-                occuringTime.Hours, occuringTime.Minutes, occuringTime.Seconds);
+           
 
             if (configuration.DailyFrequency!.OccursOnceAt != null)
             {
+                var occuringTime = (TimeSpan)configuration.DailyFrequency!.OccursOnceAt!;
+                startingDate = new DateTime(startingDate.Year, startingDate.Month, startingDate.Day,
+                    occuringTime.Hours, occuringTime.Minutes, occuringTime.Seconds);
                 while (true)
                 {
-                    if (startingDate > currentDate)
-                    {
-                        var date = FindNthOccurrenceOfDay(startingDate, day, position);
-                        return new ScheduleDetails(date, $"Next schedule will execute on {date}");
-                    }
                     if (startingDate.Month == currentDate.Month && startingDate.Year == currentDate.Year)
                     {
                         var a = FindNthOccurrenceOfDay(startingDate, day, position);
                         if (a.Day == currentDate.Day)
                         {
                             if (currentDate.TimeOfDay < occuringTime)
-                                return  new ScheduleDetails(startingDate, $"Next schedule will execute on {startingDate}");
+                                return  new ScheduleDetails(a, $"Next schedule will execute on {a}");
                             if (currentDate.TimeOfDay >= occuringTime)
                             {
                                 var newMonth =
@@ -138,6 +134,11 @@ public static class Scheduler
                         var date = FindNthOccurrenceOfDay(nextMonth, day, position);
                         return  new ScheduleDetails(date, $"Next schedule will execute on {date}");
                     }
+                    if (startingDate > currentDate)
+                    {
+                        var date = FindNthOccurrenceOfDay(startingDate, day, position);
+                        return new ScheduleDetails(date, $"Next schedule will execute on {date}");
+                    }
                     startingDate = startingDate.AddMonths(months);
                 }
             }
@@ -156,23 +157,35 @@ public static class Scheduler
                     var date = FindNthOccurrenceOfDay(startingDate, day, position);
                     return new ScheduleDetails(date, $"Next schedule will execute on {date}");
                 }
-                if (startingDate.Date == currentDate.Date)
+                if (startingDate.Month == currentDate.Month && startingDate.Year == currentDate.Year)
                 {
-                    if (currentDate.TimeOfDay < startingTime)
-                        return  new ScheduleDetails(startingDate, $"Next schedule will execute on {startingDate}");
-                    if (currentDate.TimeOfDay >= startingTime && currentDate.TimeOfDay < endingTime)
+                    var a = FindNthOccurrenceOfDay(startingDate, day, position);
+                    if (a.Day == currentDate.Day)
                     {
-                        return configuration.DailyFrequency.IntervalType switch
+                        if (currentDate.TimeOfDay < startingTime)
+                            return  new ScheduleDetails(a, $"Next schedule will execute on {a}");
+                        if (currentDate.TimeOfDay >= startingTime && currentDate.TimeOfDay < endingTime)
                         {
-                            IntervalType.Hours => new ScheduleDetails(startingDate.AddHours(count),
-                                $"Next schedule will execute on {startingDate.AddHours(count)}"),
-                            IntervalType.Minutes => new ScheduleDetails(startingDate.AddMinutes(count),
-                                $"Next schedule will execute on {startingDate.AddMinutes(count)}"),
-                            _ => new ScheduleDetails(startingDate.AddSeconds(count),
-                                $"Next schedule will execute on {startingDate.AddSeconds(count)}")
-                        };
+                            return configuration.DailyFrequency.IntervalType switch
+                            {
+                                IntervalType.Hours => new ScheduleDetails(a.AddHours(count),
+                                    $"Next schedule will execute on {a.AddHours(count)}"),
+                                IntervalType.Minutes => new ScheduleDetails(a.AddMinutes(count),
+                                    $"Next schedule will execute on {a.AddMinutes(count)}"),
+                                _ => new ScheduleDetails(a.AddSeconds(count),
+                                    $"Next schedule will execute on {a.AddSeconds(count)}")
+                            };
+                        }
                     }
-                    return  new ScheduleDetails(startingDate.AddMonths(months), $"Next schedule will execute on {startingDate.AddMonths(months)}");
+                    if (currentDate.Day < a.Day)
+                    {
+                        var d = FindNthOccurrenceOfDay(startingDate, day, position);
+                        return  new ScheduleDetails(d, $"Next schedule will execute on {d}");
+                    }
+                    var nextMonth =
+                        startingDate.AddMonths(configuration.MonthlyConfiguration.EveryAfterMonths); 
+                    var date = FindNthOccurrenceOfDay(nextMonth, day, position);
+                    return  new ScheduleDetails(date, $"Next schedule will execute on {date}");
                 }
                 startingDate = startingDate.AddMonths(months);
             }

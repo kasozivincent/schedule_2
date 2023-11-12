@@ -366,7 +366,6 @@ public class DailyScheduleTests
                 StartingTime = new TimeSpan(2, 0, 0),
                 EndingTime = new TimeSpan(4, 0, 0),
             },
-            WeeklyConfiguration = null
         };
 
         var details = Scheduler.CalculateDetails(configuration);
