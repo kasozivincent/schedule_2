@@ -521,6 +521,119 @@ public class MonthlyScheduleTheOccurRepetitiveTests
         });
     }
     
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_The_OccurRepetitive_InValidCurrentDate()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2020, 1, 1),
+                EndDate = new DateTime(2020, 10, 1)
+            },
+            CurrentDate = new DateTime(2025, 5, 5, 2, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 2,
+                IntervalType = IntervalType.Seconds,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0),
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                EveryAfterMonths = 1,
+                Position = Position.First,
+                Day = Day.Monday
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(DateTime.MinValue));
+            Assert.That(details.Description, Is.EqualTo("Schedule can't be executed"));
+        });
+    }
+
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_The_OccurRepetitive_InvalidCurrentDate()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2020, 1, 1),
+                EndDate = new DateTime(2020, 10, 1)
+            },
+            CurrentDate = new DateTime(2020, 12, 5, 1, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 2,
+                IntervalType = IntervalType.Seconds,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0),
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                EveryAfterMonths = 1,
+                Position = Position.First,
+                Day = Day.Monday
+            }
+        };
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        { 
+            Assert.That(details.NextDate, Is.EqualTo(DateTime.MinValue));
+            Assert.That(details.Description, Is.EqualTo("Schedule can't be executed"));
+        });
+    }
     
-    
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_The_OccurRepetitive_InvalidCount()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2020, 1, 1),
+                EndDate = new DateTime(2020, 10, 1)
+            },
+            CurrentDate = new DateTime(2020, 5, 5, 1, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 2,
+                IntervalType = IntervalType.Seconds,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0),
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                EveryAfterMonths = -1,
+                Position = Position.First,
+                Day = Day.Monday
+            }
+        };
+
+        Assert.That(() => Scheduler.CalculateDetails(configuration), 
+            Throws.ArgumentException.With.Message.EqualTo("Count can't be non positive"));
+    }
+
 }
