@@ -2,11 +2,11 @@
 
 public enum Position
 {
-    First,
-    Second,
-    Third,
-    Fourth,
-    Last
+    First = 1,
+    Second = 2,
+    Third = 3,
+    Fourth = 4,
+    Last = -1
 }
 
 public enum Day

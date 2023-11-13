@@ -636,4 +636,203 @@ public class MonthlyScheduleTheOccurRepetitiveTests
             Throws.ArgumentException.With.Message.EqualTo("Count can't be non positive"));
     }
 
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_The_OccurRepetitive_FirstWeekEndDay()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2023, 11, 1),
+                EndDate = new DateTime(2024, 11, 1)
+            },
+            CurrentDate = new DateTime(2023, 11, 5, 3, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 2,
+                IntervalType = IntervalType.Seconds,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0),
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                EveryAfterMonths = 3,
+                Position = Position.First,
+                Day = Day.WeekendDay
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2024, 2, 3, 2, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
+    
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_The_OccurRepetitive_SecondWeekEndDay()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2023, 11, 1),
+                EndDate = new DateTime(2024, 11, 1)
+            },
+            CurrentDate = new DateTime(2023, 11, 5, 3, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 1,
+                IntervalType = IntervalType.Hours,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0),
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                EveryAfterMonths = 3,
+                Position = Position.Second,
+                Day = Day.WeekendDay
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2023, 11, 5, 4, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
+    
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_The_OccurRepetitive_ThirdWeekEndDay()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2023, 11, 1),
+                EndDate = new DateTime(2024, 11, 1)
+            },
+            CurrentDate = new DateTime(2023, 11, 5, 3, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 2,
+                IntervalType = IntervalType.Seconds,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0),
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                EveryAfterMonths = 3,
+                Position = Position.Third,
+                Day = Day.WeekendDay
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2024, 2, 3, 2, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
+    
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_The_OccurRepetitive_FourthWeekEndDay()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2023, 11, 1),
+                EndDate = new DateTime(2024, 11, 1)
+            },
+            CurrentDate = new DateTime(2023, 11, 5, 3, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 2,
+                IntervalType = IntervalType.Seconds,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0),
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                EveryAfterMonths = 3,
+                Position = Position.Fourth,
+                Day = Day.WeekendDay
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2024, 2, 3, 2, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
+    
+    [Test]
+    public void CalculateDetails_RecurringMonthlyScheduleEnabled_The_OccurRepetitive_LastWeekEndDay()
+    {
+        var configuration = new ScheduleConfiguration
+        {
+            Limits = new Limits
+            {
+                StartDate = new DateTime(2023, 11, 1),
+                EndDate = new DateTime(2024, 11, 1)
+            },
+            CurrentDate = new DateTime(2023, 11, 5, 3, 0, 0),
+            Configuration = new Configuration
+            {
+                Enabled = true,
+                ScheduleType = ScheduleType.Recurring,
+                Occurs = Occurs.Monthly
+            },
+            DailyFrequency = new DailyFrequency
+            {
+                OccursEvery = 2,
+                IntervalType = IntervalType.Seconds,
+                StartingTime = new TimeSpan(2, 0, 0),
+                EndingTime = new TimeSpan(4, 0, 0),
+            },
+            MonthlyConfiguration = new MonthlyConfiguration
+            {
+                EveryAfterMonths = 3,
+                Position = Position.Last,
+                Day = Day.WeekendDay
+            }
+        };
+
+        var details = Scheduler.CalculateDetails(configuration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(details.NextDate, Is.EqualTo(new DateTime(2024, 2, 3, 2, 0, 0)));
+            Assert.That(details.Description, Is.EqualTo($"Next schedule will execute on {details.NextDate}"));
+        });
+    }
 }
